@@ -21,6 +21,8 @@ newsFlow.navigationOptions = {
 	cardStyle: { backgroundColor: '#f5d2a4' }
 };
 
+//#f5d2a4
+
 const navigator = createStackNavigator(
 	{
 		newsFlow,

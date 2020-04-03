@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import news from '../api/news';
 
-export default (storyName, variablesArray) => {
+export default (storyName, variablesArray, storiesToLoad) => {
 	const [storiesIds, setStoriesIds] = useState([]);
 
 	useEffect(() => {
@@ -18,5 +18,5 @@ export default (storyName, variablesArray) => {
 		getStoriesIds();
 	}, [...variablesArray]);
 
-	return [storiesIds];
+	return [storiesIds.slice(0, storiesToLoad)];
 };

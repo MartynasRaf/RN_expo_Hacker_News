@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import Tab from '../components/Tab';
-import news from '../api/news';
 import useHNApi from '../hooks/useHNApi';
 import { FlatList } from 'react-native-gesture-handler';
 
 const TopScreen = ({ navigation }) => {
-	const [storiesIds] = useHNApi('topstories', []);
+	const [storiesIds] = useHNApi('topstories', [], 100);
 
 	return (
 		<SafeAreaView forceInset={{ top: 'always' }}>
@@ -19,7 +18,9 @@ const TopScreen = ({ navigation }) => {
 					windowSize={2}
 					updateCellsBatchingPeriod={100}
 					removeClippedSubviews
-					renderItem={item => <Tab id={item} navigation={navigation} />}
+					renderItem={item => (
+						<Tab id={item} navigation={navigation} />
+					)}
 				/>
 			) : null}
 		</SafeAreaView>

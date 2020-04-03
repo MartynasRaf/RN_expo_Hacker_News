@@ -1,47 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {
+	View,
+	Text,
+	StyleSheet,
+	TouchableOpacity,
+	Dimensions
+} from 'react-native';
 import { EvilIcons } from '@expo/vector-icons';
+import { Linking } from 'expo';
 import news from '../api/news';
 
 const Tab = ({ id, navigation }) => {
 	const [story, setStory] = useState(null);
 
+	const componentIsMounted = useRef(true);
+
 	useEffect(() => {
 		const getStory = async () => {
 			try {
-				const response = await news.get(`/item/${id.item}.json`);
-				setStory(response.data);
+				if (componentIsMounted) {
+					const response = await news.get(`/item/${id.item}.json`);
+					setStory(response.data);
+				}
 			} catch (err) {
 				console.log(`Error: ${err}`);
 			}
 		};
 
 		getStory();
+
+		return () => {
+			componentIsMounted.current = false;
+		};
 	}, []);
 
 	return (
 		<View style={styles.emptyContainer}>
 			{story !== null ? (
 				<View style={styles.container}>
-					<TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => navigation.navigate('Tab', { story })}
+					>
 						<View style={styles.textContainer}>
-							<Text
-								style={
-									story.title.length <= 23
-										? [styles.header, styles.oneLineText]
-										: styles.header
-								}
-								numberOfLines={2}
-							>
+							<Text style={styles.header} numberOfLines={2}>
 								{story.title}
 							</Text>
-							<Text style={styles.info}>
-								{story.score} points by {story.by} 1 day ago |
+							<Text
+								style={styles.info}
+								adjustsFontSizeToFit
+								numberOfLines={1}
+							>
+								{story.score} points by {story.by} {story.time} |{' '}
 								{story.descendants} comments
 							</Text>
 						</View>
 					</TouchableOpacity>
-					<TouchableOpacity>
+					<TouchableOpacity
+						onPress={() => Linking.openURL(story.url)}
+					>
 						<EvilIcons
 							name='external-link'
 							size={62}
@@ -63,7 +79,8 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomStartRadius: 10,
 		borderBottomEndRadius: 10,
-		borderBottomColor: 'grey'
+		borderBottomColor: 'grey',
+		width: Dimensions.get('window').width
 	},
 	container: {
 		flexDirection: 'row'
@@ -72,23 +89,28 @@ const styles = StyleSheet.create({
 		marginTop: 13
 	},
 	textContainer: {
-		width: 350
+		width: Dimensions.get('window').width / 1.2,
+		justifyContent: 'center',
+		alignItems: 'center',
+		flex: 1,
+		marginTop: 15
 	},
 	header: {
 		fontSize: 20,
 		paddingLeft: 15,
 		fontWeight: 'bold',
-		width: 320
+		width: Dimensions.get('window').width / 1.2
 	},
 	info: {
 		fontSize: 12,
 		paddingLeft: 15,
 		color: '#858585',
-		fontWeight: '500'
+		fontWeight: '500',
+		width: Dimensions.get('window').width / 1.2
 	},
 	image: {
-		marginTop: 10,
-		marginLeft: -15
+		width: 62,
+		marginTop: 10
 	}
 });
 
